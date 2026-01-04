@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mini WooRank</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <h1>Mini WooRank</h1>
+
+  <p>Enter a website URL to analyze its basic SEO signals.</p>
+
+  <input id="urlInput" type="text" placeholder="https://example.com" style="width:300px;">
+  <button id="analyzeBtn">Analyze</button>
+
+  <pre id="result" style="margin-top:20px;"></pre>
+
+  <script>
+    const btn = document.getElementById('analyzeBtn');
+    const input = document.getElementById('urlInput');
+    const result = document.getElementById('result');
+
+    btn.addEventListener('click', async () => {
+      const url = input.value.trim();
+      if (!url) {
+        result.textContent = 'Please enter a URL.';
+        return;
+      }
+
+      result.textContent = 'Analyzing...';
+
+      try {
+        const res = await fetch('/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url })
+        });
+
+        const data = await res.json();
+        result.textContent = JSON.stringify(data, null, 2);
+      } catch (e) {
+        result.textContent = 'Error while analyzing.';
+      }
+    });
+  </script>
+</body>
+</html>
