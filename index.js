@@ -5,6 +5,11 @@ const cheerio = require('cheerio');
 const app = express();
 app.use(express.json());
 
+// NEW: root route
+app.get('/', (req, res) => {
+  res.send('Mini Woorank backend is running');
+});
+
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
