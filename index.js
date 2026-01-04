@@ -1,13 +1,17 @@
 const express = require('express');
 const axios = require('axios');
 const cheerio = require('cheerio');
+const path = require('path');              // NEW: path module
 
 const app = express();
 app.use(express.json());
 
-// NEW: root route
+// NEW: serve frontend files from "public" folder
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Root route (ab optional hai, kyunki index.html serve hoga)
 app.get('/', (req, res) => {
-  res.send('Mini Woorank backend is running');
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.get('/health', (req, res) => {
