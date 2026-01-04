@@ -1,15 +1,13 @@
 const express = require('express');
 const axios = require('axios');
 const cheerio = require('cheerio');
-const path = require('path');              // NEW: path module
+const path = require('path');
 
 const app = express();
 app.use(express.json());
 
-// NEW: serve frontend files from "public" folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Root route (ab optional hai, kyunki index.html serve hoga)
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -25,7 +23,15 @@ app.post('/analyze', async (req, res) => {
   }
 
   try {
-    const response = await axios.get(url, { timeout: 8000 });
+    const response = await axios.get(url, {
+      timeout: 15000,
+      maxRedirects: 5,
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36'
+      }
+    });
+
     const html = response.data;
     const $ = cheerio.load(html);
 
@@ -49,7 +55,10 @@ app.post('/analyze', async (req, res) => {
       score
     });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch or analyze URL' });
+    console.error('Analyze error:', err.message);
+    res.status(500).json({
+      error: 'Failed to fetch or analyze URL: ' + err.message
+    });
   }
 });
 
