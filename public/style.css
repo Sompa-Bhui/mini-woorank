@@ -167,6 +167,50 @@ body {
   overflow: auto;
 }
 
+/* Why Mini WooRank section */
+.why-section {
+  padding: 32px 16px 40px;
+  background: linear-gradient(to bottom, rgba(15, 23, 42, 0.4), #020617);
+}
+
+.why-inner {
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.why-inner h2 {
+  font-size: 1.6rem;
+  margin-bottom: 6px;
+}
+
+.why-text {
+  color: #9ca3af;
+  margin-bottom: 18px;
+}
+
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.why-card {
+  background: rgba(15, 23, 42, 0.96);
+  border-radius: 14px;
+  padding: 14px 16px;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.why-card h3 {
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+
+.why-card p {
+  font-size: 0.9rem;
+  color: #cbd5f5;
+}
+
 /* Footer */
 .footer {
   text-align: center;
@@ -202,5 +246,9 @@ body {
 
   .input-row button {
     width: 100%;
+  }
+
+  .why-inner h2 {
+    font-size: 1.4rem;
   }
 }
