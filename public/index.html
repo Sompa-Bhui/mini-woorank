@@ -4,30 +4,88 @@
   <meta charset="UTF-8">
   <title>Mini WooRank</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- NEW: external CSS -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Mini WooRank</h1>
+  <header class="top-bar">
+    <div class="logo">Mini <span>WooRank</span></div>
+    <nav class="nav">
+      <a href="#">Overview</a>
+      <a href="#">Site Crawl</a>
+      <a href="#">Reports</a>
+      <a href="#">Help</a>
+    </nav>
+  </header>
 
-  <p>Enter a website URL to analyze its basic SEO signals.</p>
+  <main class="hero">
+    <section class="card">
+      <h1>Analyze your website</h1>
+      <p>Enter a website URL to get a quick SEO health check, similar to WooRank reviews.</p>
 
-  <input id="urlInput" type="text" placeholder="https://example.com" style="width:300px;">
-  <button id="analyzeBtn">Analyze</button>
+      <div class="input-row">
+        <input id="urlInput" type="text" placeholder="https://example.com">
+        <button id="analyzeBtn">Analyze</button>
+      </div>
 
-  <pre id="result" style="margin-top:20px;"></pre>
+      <div id="status"></div>
+
+      <div id="resultCards" class="results-grid" style="display:none;">
+        <div class="result-card">
+          <h3>Title tag</h3>
+          <p id="titleStatus"></p>
+        </div>
+        <div class="result-card">
+          <h3>Meta description</h3>
+          <p id="metaStatus"></p>
+        </div>
+        <div class="result-card">
+          <h3>H1 headings</h3>
+          <p id="h1Status"></p>
+        </div>
+        <div class="result-card">
+          <h3>Page size</h3>
+          <p id="sizeStatus"></p>
+        </div>
+        <div class="result-card score-card">
+          <h3>Overall score</h3>
+          <p id="scoreStatus"></p>
+        </div>
+      </div>
+
+      <!-- raw JSON debug (optional) -->
+      <pre id="rawResult" class="raw"></pre>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Mini WooRank demo – backend &amp; frontend built by Sompa.</p>
+  </footer>
 
   <script>
     const btn = document.getElementById('analyzeBtn');
     const input = document.getElementById('urlInput');
-    const result = document.getElementById('result');
+    const statusEl = document.getElementById('status');
+    const resultGrid = document.getElementById('resultCards');
+    const titleStatus = document.getElementById('titleStatus');
+    const metaStatus = document.getElementById('metaStatus');
+    const h1Status = document.getElementById('h1Status');
+    const sizeStatus = document.getElementById('sizeStatus');
+    const scoreStatus = document.getElementById('scoreStatus');
+    const rawResult = document.getElementById('rawResult');
 
     btn.addEventListener('click', async () => {
       const url = input.value.trim();
       if (!url) {
-        result.textContent = 'Please enter a URL.';
+        statusEl.textContent = 'Please enter a URL.';
+        resultGrid.style.display = 'none';
+        rawResult.textContent = '';
         return;
       }
 
-      result.textContent = 'Analyzing...';
+      statusEl.textContent = 'Analyzing...';
+      resultGrid.style.display = 'none';
+      rawResult.textContent = '';
 
       try {
         const res = await fetch('/analyze', {
@@ -37,9 +95,27 @@
         });
 
         const data = await res.json();
-        result.textContent = JSON.stringify(data, null, 2);
+
+        if (res.ok) {
+          statusEl.textContent = 'Analysis complete.';
+          resultGrid.style.display = 'grid';
+
+          titleStatus.textContent = data.title_present
+            ? 'Title tag found.'
+            : 'No title tag found.';
+          metaStatus.textContent = data.meta_description_present
+            ? 'Meta description present.'
+            : 'Meta description missing.';
+          h1Status.textContent = `Found ${data.h1_count} H1 heading(s).`;
+          sizeStatus.textContent = `${Math.round(data.page_size_bytes / 1024)} KB`;
+          scoreStatus.textContent = `${data.score} / 100`;
+
+          rawResult.textContent = JSON.stringify(data, null, 2);
+        } else {
+          statusEl.textContent = data.error || 'Something went wrong.';
+        }
       } catch (e) {
-        result.textContent = 'Error while analyzing.';
+        statusEl.textContent = 'Error while analyzing (network/server issue).';
       }
     });
   </script>
